@@ -14,9 +14,9 @@ class search():
         with open("lexicon.json") as f:
             self.lexicon = json.load(f)
 
-    def loadForewardIndex(self):
-        with open("forewardIndex.json") as f:
-            self.forewardIndex = json.load(f)
+    def loadForwardIndex(self):
+        with open("forwardIndex.json") as f:
+            self.forwardIndex = json.load(f)
 
     def loadInvertedIndex(self):
         with open("invertedIndex.json") as f:
@@ -26,9 +26,9 @@ class search():
         with open('lexicon.json', 'w') as f:
             f.write(json.dumps(self.lexicon))
 
-    def storeForewardIndex(self):
-        with open('forewardIndex.json', 'w') as f:
-            f.write(json.dumps(self.forewardIndex))
+    def storeForwardIndex(self):
+        with open('forwardIndex.json', 'w') as f:
+            f.write(json.dumps(self.forwardIndex))
 
     def storeInvertedIndex(self):
         with open('invertedIndex.json', 'w') as f:
@@ -36,7 +36,7 @@ class search():
 
     def updateLex(self, file):
         self.loadLex()
-        self.loadForewardIndex()
+        self.loadForwardIndex()
         stop_words = set(stopwords.words('english'))
 
         with open(file) as f:
@@ -50,15 +50,15 @@ class search():
                 else:
                     if (ps.stem(word) not in self.lexicon.keys()):
                         self.lexicon[ps.stem(word)] = str(len(self.lexicon))
-                    if (i["id"] in self.forewardIndex.keys()):
-                        if (self.lexicon[ps.stem(word)] in self.forewardIndex[i["id"]].keys()):
-                            self.forewardIndex[i["id"]][self.lexicon[ps.stem(word)]].append(
+                    if (i["id"] in self.forwardIndex.keys()):
+                        if (self.lexicon[ps.stem(word)] in self.forwardIndex[i["id"]].keys()):
+                            self.forwardIndex[i["id"]][self.lexicon[ps.stem(word)]].append(
                                 pos)
                         else:
-                            self.forewardIndex[i["id"]][self.lexicon[ps.stem(word)]] = [
+                            self.forwardIndex[i["id"]][self.lexicon[ps.stem(word)]] = [
                                 pos]
                     else:
-                        self.forewardIndex[i["id"]] = {
+                        self.forwardIndex[i["id"]] = {
                             self.lexicon[ps.stem(word)]: [pos]}
 
                 pos += 1
@@ -69,22 +69,24 @@ class search():
                 else:
                     if (ps.stem(word) not in self.lexicon.keys()):
                         self.lexicon[ps.stem(word)] = str(len(self.lexicon))
-                    if (i["id"] in self.forewardIndex.keys()):
-                        if (self.lexicon[ps.stem(word)] in self.forewardIndex[i["id"]].keys()):
-                            self.forewardIndex[i["id"]][self.lexicon[ps.stem(word)]].append(
+                    if (i["id"] in self.forwardIndex.keys()):
+                        if (self.lexicon[ps.stem(word)] in self.forwardIndex[i["id"]].keys()):
+                            self.forwardIndex[i["id"]][self.lexicon[ps.stem(word)]].append(
                                 pos)
                         else:
-                            self.forewardIndex[i["id"]][self.lexicon[ps.stem(word)]] = [
+                            self.forwardIndex[i["id"]][self.lexicon[ps.stem(word)]] = [
                                 pos]
                     else:
-                        self.forewardIndex[i["id"]] = {
+                        self.forwardIndex[i["id"]] = {
                             self.lexicon[ps.stem(word)]: [pos]}
 
                 pos += 1
 
         self.storeLex()
-        self.storeForewardIndex()
+        self.storeForwardIndex()
 
 
 obj = search()
+# The file to be forward-indexed and new words from which to be added into the lexicon
+# go as argument to the updateLex function
 obj.updateLex("airwars.json")

@@ -85,8 +85,19 @@ class search():
         self.storeLex()
         self.storeForwardIndex()
 
+    def makeInvertedIndex(self):
+        self.loadInvertedIndex()
+        self.loadForwardIndex()
+        for docID in self.forwardIndex:
+            for wordID in self.forwardIndex[docID]:
+                if (wordID in self.invertedIndex):
+                    self.invertedIndex[wordID].append(docID)
+                else:
+                    self.invertedIndex[wordID] = [docID]
+        self.storeInvertedIndex()
+
 
 obj = search()
 # The file to be forward-indexed and new words from which to be added into the lexicon
 # go as argument to the updateLex function
-obj.updateLex("airwars.json")
+obj.makeInvertedIndex()

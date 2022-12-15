@@ -76,9 +76,11 @@ class forwardIndex:
                     if (docIDs[i["url"]] in self.forwardIndex.keys()):
                         # check if wordID present in frwd indexed file
                         if (self.lexicon[ps.stem(word)] in self.forwardIndex[docIDs[i["url"]]].keys()):
-                            # if present, then append pos of word to the list of pos
-                            self.forwardIndex[docIDs[i["url"]]][self.lexicon[ps.stem(word)]].append(
-                                pos)
+                            if (pos not in self.forwardIndex[docIDs[i["url"]]][self.lexicon[ps.stem(word)]]):
+
+                                # if present, then append pos of word to the list of pos
+                                self.forwardIndex[docIDs[i["url"]]][self.lexicon[ps.stem(word)]].append(
+                                    pos)
                         else:
                             # if not present, then add a key of wordID and save a list with the pos
                             # as its value
@@ -115,7 +117,10 @@ class invertedIndex:
         for docID in forwardIndex:
             for wordID in forwardIndex[docID]:
                 if (wordID in self.invertedIndex):
-                    self.invertedIndex[wordID].append(docID)
+                    if (docID in self.invertedIndex[wordID]):
+                        pass
+                    else:
+                        self.invertedIndex[wordID].append(docID)
                 else:
                     self.invertedIndex[wordID] = [docID]
         self.storeInvertedIndex()

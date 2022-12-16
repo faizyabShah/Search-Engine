@@ -29,6 +29,32 @@ class docID:
 
 
 class forwardIndex:
+    def __init__(self):
+        self.loadForwardIndex()
+
+    def loadForwardIndex(self):
+        with open("forwardIndex.json") as f:
+            self.forwardIndex = json.load(f)
+
+    def storeForwardIndex(self):
+        with open("forwardIndex.json", "w") as f:
+            f.write(json.dumps(self.forwardIndex))
+
+    def updateForwardIndex(self, docID, wordID, pos):
+        if (docID in self.forwardIndex.keys()):
+            if (wordID in self.forwardIndex[docID].keys()):
+                if (pos not in self.forwardIndex[docID][wordID]):
+                    self.forwardIndex[docID][wordID].append(pos)
+            else:
+                self.forwardIndex[docID][wordID] = [pos]
+        else:
+            self.forwardIndex[docID] = {wordID: [pos]}
+
+    def __del__(self):
+        self.storeForwardIndex()
+
+
+class lexicon:
 
     def __init__(self):
         pass
@@ -37,22 +63,14 @@ class forwardIndex:
         with open("lexicon.json") as f:
             self.lexicon = json.load(f)
 
-    def loadForwardIndex(self):
-        with open("forwardIndex.json") as f:
-            self.forwardIndex = json.load(f)
-
     def storeLex(self):
         with open('lexicon.json', 'w') as f:
             f.write(json.dumps(self.lexicon))
 
-    def storeForwardIndex(self):
-        with open('forwardIndex.json', 'w') as f:
-            f.write(json.dumps(self.forwardIndex))
-
-    def updateForwardIndex(self, file):
+    def updateLex(self, file):
         ps = PorterStemmer()
         self.loadLex()
-        self.loadForwardIndex()
+        frwdindx = forwardIndex()
         doc_ids = docID()
 
         stop_words = set(stopwords.words('english'))
@@ -77,31 +95,13 @@ class forwardIndex:
                         # and set value to pos in lex file
                         self.lexicon[ps.stem(word)] = str(len(self.lexicon))
                         # now check if docID is in frwd indexed file
-                    if (docpos in self.forwardIndex.keys()):
-                        # check if wordID present in frwd indexed file
-                        if (self.lexicon[ps.stem(word)] in self.forwardIndex[docpos].keys()):
-                            if (pos not in self.forwardIndex[docpos][self.lexicon[ps.stem(word)]]):
-
-                                # if present, then append pos of word to the list of pos
-                                self.forwardIndex[docpos][self.lexicon[ps.stem(word)]].append(
-                                    pos)
-                        else:
-                            # if not present, then add a key of wordID and save a list with the pos
-                            # as its value
-                            self.forwardIndex[docpos][self.lexicon[ps.stem(word)]] = [
-                                pos]
-                    else:
-                        # if docID not already present, add the docID and join wordId and
-                        # pos as a dict entry for its value
-                        self.forwardIndex[docpos] = {
-                            self.lexicon[ps.stem(word)]: [pos]}
-
+                    frwdindx.updateForwardIndex(
+                        docpos, self.lexicon[ps.stem(word)], pos)
                 pos += 1
 
             docpos += 1
 
         self.storeLex()
-        self.storeForwardIndex()
 
 
 class invertedIndex:

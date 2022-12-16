@@ -1,11 +1,9 @@
 from queryParser import *
 from Indexer import *
 
-query = queryParser()
 
-doc = docID()
+lex = lexicon()
+lex.updateLex("airwars.json")
 
-docids = query.search("Belgian parliament")
-
-for i in docids:
-    print(doc.docIDs[i])
+inv = invertedIndex()
+inv.updateInvertedIndex()

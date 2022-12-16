@@ -1,10 +1,11 @@
+from queryParser import *
 from Indexer import *
 
-docs = docID()
-docs.updateDocIDs("airwars.json")
+query = queryParser()
 
-indx = forwardIndex()
-indx.updateForwardIndex("airwars.json")
+doc = docID()
 
-inv = invertedIndex()
-inv.updateInvertedIndex()
+docids = query.search("Belgian parliament")
+
+for i in docids:
+    print(doc.docIDs[i])

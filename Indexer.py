@@ -1,32 +1,30 @@
 import json
 import string
 from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-ps = PorterStemmer()
 
 
 class docID:
     def __init__(self):
-        pass
+        self.loadDocIDs()
 
     def loadDocIDs(self):
-        with open("docIds.json") as f:
+        with open("docIDs.json") as f:
             self.docIDs = json.load(f)
 
     def storeDocIDs(self):
         with open("docIDs.json", "w") as f:
             f.write(json.dumps(self.docIDs))
 
-    def updateDocIDs(self, file):
-        self.loadDocIDs()
-        with open(file) as f:
-            data = json.load(f)
-        for article in data:
-            if article["url"] in self.docIDs.keys():
-                pass
-            else:
-                self.docIDs[article["url"]] = str(len(self.docIDs))
+    def updateDocIDs(self, pos, article):
+
+        self.docIDs[str(pos)] = {
+            "title": article["title"],
+            "url": article["url"],
+            "content": article["content"][:150] + "..."
+        }
+
+    def __del__(self):
         self.storeDocIDs()
 
 
@@ -52,17 +50,23 @@ class forwardIndex:
             f.write(json.dumps(self.forwardIndex))
 
     def updateForwardIndex(self, file):
+        ps = PorterStemmer()
         self.loadLex()
         self.loadForwardIndex()
-        with open("docIDs.json") as f:
-            docIDs = json.load(f)
+        doc_ids = docID()
+
         stop_words = set(stopwords.words('english'))
 
         with open(file) as f:
             data = json.load(f)
-        for i in data:  # loop over entries in file dictionary, where entries are articles
+
+        docpos = 0
+
+        for article in data:  # loop over entries in file dictionary, where entries are articles
+            doc_ids.updateDocIDs(docpos, article)
+
             pos = 0
-            temp = i["title"] + " " + i["content"]
+            temp = article["title"] + " " + article["content"]
             temp = temp.split()
             for word in temp:  # first, looping over words in the title of the article
                 if (word in stop_words or word in string.punctuation):
@@ -73,26 +77,28 @@ class forwardIndex:
                         # and set value to pos in lex file
                         self.lexicon[ps.stem(word)] = str(len(self.lexicon))
                         # now check if docID is in frwd indexed file
-                    if (docIDs[i["url"]] in self.forwardIndex.keys()):
+                    if (docpos in self.forwardIndex.keys()):
                         # check if wordID present in frwd indexed file
-                        if (self.lexicon[ps.stem(word)] in self.forwardIndex[docIDs[i["url"]]].keys()):
-                            if (pos not in self.forwardIndex[docIDs[i["url"]]][self.lexicon[ps.stem(word)]]):
+                        if (self.lexicon[ps.stem(word)] in self.forwardIndex[docpos].keys()):
+                            if (pos not in self.forwardIndex[docpos][self.lexicon[ps.stem(word)]]):
 
                                 # if present, then append pos of word to the list of pos
-                                self.forwardIndex[docIDs[i["url"]]][self.lexicon[ps.stem(word)]].append(
+                                self.forwardIndex[docpos][self.lexicon[ps.stem(word)]].append(
                                     pos)
                         else:
                             # if not present, then add a key of wordID and save a list with the pos
                             # as its value
-                            self.forwardIndex[docIDs[i["url"]]][self.lexicon[ps.stem(word)]] = [
+                            self.forwardIndex[docpos][self.lexicon[ps.stem(word)]] = [
                                 pos]
                     else:
                         # if docID not already present, add the docID and join wordId and
                         # pos as a dict entry for its value
-                        self.forwardIndex[docIDs[i["url"]]] = {
+                        self.forwardIndex[docpos] = {
                             self.lexicon[ps.stem(word)]: [pos]}
 
                 pos += 1
+
+            docpos += 1
 
         self.storeLex()
         self.storeForwardIndex()

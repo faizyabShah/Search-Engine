@@ -1,5 +1,6 @@
 import json
 import string
+import re
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 
@@ -80,28 +81,29 @@ class lexicon:
 
         docpos = 0
 
-        for article in data:  # loop over entries in file dictionary, where entries are articles
-            doc_ids.updateDocIDs(docpos, article)
+        for article in data:
+            if ("isIndexed" not in article):
+                doc_ids.updateDocIDs(docpos, article)
 
-            pos = 0
-            temp = article["title"] + " " + article["content"]
-            temp = temp.split()
-            for word in temp:  # first, looping over words in the title of the article
-                if (word in stop_words or word in string.punctuation):
-                    pass  # if stopwords, or punctuation, no op
-                else:
-                    if (ps.stem(word) not in self.lexicon.keys()):
-                        # if word stem is not in the lex file, then add it as key in lex dictionary
-                        # and set value to pos in lex file
-                        self.lexicon[ps.stem(word)] = str(len(self.lexicon))
-                        # now check if docID is in frwd indexed file
-                    frwdindx.updateForwardIndex(
-                        docpos, self.lexicon[ps.stem(word)], pos)
-                pos += 1
+                pos = 0
+                temp = article["title"] + " " + article["content"]
+                temp = temp.split()
+                for word in temp:
+                    if (word in stop_words or word in string.punctuation):
+                        pass
+                    else:
+                        if (ps.stem(word) not in self.lexicon.keys()):
+                            self.lexicon[ps.stem(word)] = str(
+                                len(self.lexicon))
+                        frwdindx.updateForwardIndex(
+                            docpos, self.lexicon[ps.stem(word)], pos)
+                    pos += 1
 
-            docpos += 1
-
+                docpos += 1
+                article["isIndexed"] = 1
         self.storeLex()
+        with open(file, "w") as f:
+            f.write(json.dumps(data))
 
 
 class invertedIndex:

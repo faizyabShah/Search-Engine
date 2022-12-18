@@ -1,5 +1,4 @@
 import json
-import string
 import re
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
@@ -42,10 +41,9 @@ class forwardIndex:
             f.write(json.dumps(self.forwardIndex))
 
     def updateForwardIndex(self, docID, wordID, pos):
-        if (docID in self.forwardIndex.keys()):
-            if (wordID in self.forwardIndex[docID].keys()):
-                if (pos not in self.forwardIndex[docID][wordID]):
-                    self.forwardIndex[docID][wordID].append(pos)
+        if (docID in self.forwardIndex):
+            if (wordID in self.forwardIndex[docID]):
+                self.forwardIndex[docID][wordID].append(pos)
             else:
                 self.forwardIndex[docID][wordID] = [pos]
         else:
@@ -79,31 +77,28 @@ class lexicon:
         with open(file) as f:
             data = json.load(f)
 
-        docpos = 0
+        docpos = len(doc_ids.docIDs)
 
         for article in data:
-            if ("isIndexed" not in article):
-                doc_ids.updateDocIDs(docpos, article)
+            # if ("isIndexed" not in article):
+            doc_ids.updateDocIDs(docpos, article)
+            temp = article["title"] + " " + article["content"]
+            temp = re.sub(r'[^\w\s]', '', temp)
+            temp = temp.split()
+            for i in range(len(temp)):
+                if temp[i] not in stop_words:
+                    word = ps.stem(temp[i])
+                    if (word not in self.lexicon):
+                        self.lexicon[word] = str(
+                            len(self.lexicon))
+                    frwdindx.updateForwardIndex(
+                        docpos, self.lexicon[word], i)
 
-                pos = 0
-                temp = article["title"] + " " + article["content"]
-                temp = temp.split()
-                for word in temp:
-                    if (word in stop_words or word in string.punctuation):
-                        pass
-                    else:
-                        if (ps.stem(word) not in self.lexicon.keys()):
-                            self.lexicon[ps.stem(word)] = str(
-                                len(self.lexicon))
-                        frwdindx.updateForwardIndex(
-                            docpos, self.lexicon[ps.stem(word)], pos)
-                    pos += 1
-
-                docpos += 1
-                article["isIndexed"] = 1
+            docpos += 1
+            # article["isIndexed"] = 1
         self.storeLex()
-        with open(file, "w") as f:
-            f.write(json.dumps(data))
+        # with open(file, "w") as f:
+        #     f.write(json.dumps(data))
 
 
 class invertedIndex:
@@ -125,9 +120,7 @@ class invertedIndex:
         for docID in forwardIndex:
             for wordID in forwardIndex[docID]:
                 if (wordID in self.invertedIndex):
-                    if (docID in self.invertedIndex[wordID]):
-                        pass
-                    else:
+                    if docID not in self.invertedIndex[wordID]:
                         self.invertedIndex[wordID].append(docID)
                 else:
                     self.invertedIndex[wordID] = [docID]

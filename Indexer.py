@@ -120,8 +120,8 @@ class invertedIndex:
         for docID in forwardIndex:
             for wordID in forwardIndex[docID]:
                 if (wordID in self.invertedIndex):
-                    if docID not in self.invertedIndex[wordID]:
-                        self.invertedIndex[wordID].append(docID)
+                    # if docID not in self.invertedIndex[wordID]:
+                    self.invertedIndex[wordID].append(docID)
                 else:
                     self.invertedIndex[wordID] = [docID]
         self.storeInvertedIndex()

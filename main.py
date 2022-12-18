@@ -1,9 +1,12 @@
-from queryParser import *
+import time
 from Indexer import *
 
+start = time.time()
 
 lex = lexicon()
-lex.updateLex("airwars.json")
+lex.updateLex("aljazeera.json")
 
 inv = invertedIndex()
 inv.updateInvertedIndex()
+
+print(time.time() - start)

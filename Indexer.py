@@ -1,7 +1,24 @@
 import json
 import re
+import string
+from nltk import word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
+from multiprocessing import pool
+
+
+def indexarticle(article, docpos, ps, stop_words, self, frwdindx):
+    temp = article["title"] + " " + article["content"]
+    temp = temp.translate(str.maketrans('', '', string.punctuation))
+    temp = word_tokenize(temp)
+    for i in range(len(temp)):
+        if temp[i] not in stop_words:
+            word = ps.stem(temp[i])
+            if (word not in self.lexicon):
+                self.lexicon[word] = str(
+                    len(self.lexicon))
+            frwdindx.updateForwardIndex(
+                docpos, self.lexicon[word], i)
 
 
 class docID:
@@ -30,15 +47,7 @@ class docID:
 
 class forwardIndex:
     def __init__(self):
-        self.loadForwardIndex()
-
-    def loadForwardIndex(self):
-        with open("forwardIndex.json") as f:
-            self.forwardIndex = json.load(f)
-
-    def storeForwardIndex(self):
-        with open("forwardIndex.json", "w") as f:
-            f.write(json.dumps(self.forwardIndex))
+        self.forwardIndex = {}
 
     def updateForwardIndex(self, docID, wordID, pos):
         if (docID in self.forwardIndex):
@@ -48,9 +57,6 @@ class forwardIndex:
                 self.forwardIndex[docID][wordID] = [pos]
         else:
             self.forwardIndex[docID] = {wordID: [pos]}
-
-    def __del__(self):
-        self.storeForwardIndex()
 
 
 class lexicon:
@@ -78,27 +84,19 @@ class lexicon:
             data = json.load(f)
 
         docpos = len(doc_ids.docIDs)
+        # for article in data:
+        #     doc_ids.updateDocIDs(docpos, article)
+        #     docpos+=1
 
         for article in data:
-            # if ("isIndexed" not in article):
-            doc_ids.updateDocIDs(docpos, article)
-            temp = article["title"] + " " + article["content"]
-            temp = re.sub(r'[^\w\s]', '', temp)
-            temp = temp.split()
-            for i in range(len(temp)):
-                if temp[i] not in stop_words:
-                    word = ps.stem(temp[i])
-                    if (word not in self.lexicon):
-                        self.lexicon[word] = str(
-                            len(self.lexicon))
-                    frwdindx.updateForwardIndex(
-                        docpos, self.lexicon[word], i)
 
+            doc_ids.updateDocIDs(docpos, article)
             docpos += 1
-            # article["isIndexed"] = 1
+            indexarticle(article, docpos, ps, stop_words, self, frwdindx)
+
+        inv = invertedIndex()
+        inv.updateInvertedIndex(frwdindx.forwardIndex)
         self.storeLex()
-        # with open(file, "w") as f:
-        #     f.write(json.dumps(data))
 
 
 class invertedIndex:
@@ -113,15 +111,16 @@ class invertedIndex:
         with open('invertedIndex.json', 'w') as f:
             f.write(json.dumps(self.invertedIndex))
 
-    def updateInvertedIndex(self):
+    def updateInvertedIndex(self, forwardIndex):
         self.loadInvertedIndex()
-        with open("forwardIndex.json") as f:
-            forwardIndex = json.load(f)
         for docID in forwardIndex:
             for wordID in forwardIndex[docID]:
                 if (wordID in self.invertedIndex):
                     # if docID not in self.invertedIndex[wordID]:
-                    self.invertedIndex[wordID].append(docID)
+                    # if docID in self.invertedIndex[wordID]:
+                    self.invertedIndex[wordID][docID] = forwardIndex[docID][wordID]
+                    # self.invertedIndex[wordID].append(docID)
                 else:
-                    self.invertedIndex[wordID] = [docID]
+                    self.invertedIndex[wordID] = {
+                        docID: forwardIndex[docID][wordID]}
         self.storeInvertedIndex()

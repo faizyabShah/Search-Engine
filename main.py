@@ -1,12 +1,25 @@
-import time
 from Indexer import *
+from multiprocessing import Pool
+import time
 
-start = time.time()
 
-lex = lexicon()
-lex.updateLex("aljazeera.json")
+files = ["airwars.json"]
 
-inv = invertedIndex()
-inv.updateInvertedIndex()
 
-print(time.time() - start)
+def poolhandler():
+    p = Pool()
+    p.map(createIndex, files)
+
+
+def createIndex(filename):
+    lex = lexicon()
+    lex.updateLex(filename)
+
+
+if __name__ == '__main__':
+
+    start = time.time()
+    # poolhandler()
+    for file in files:
+        createIndex(file)
+    print(time.time() - start)

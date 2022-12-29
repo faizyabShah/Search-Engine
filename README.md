@@ -24,5 +24,6 @@ We developed the UI using Html/Css with ReactJS. Whereas the code is in Python 3
 *    **HTML/CSS** to style frontend
 *    **Github** for team collaboration
 
-
-
+## Design Process and implementation
+The project was developed by the team via a concerted effort over a long period of time to create the best possible end result. And the results speak for themseleves. We ued Github as a version
+control program and to easily share code between the teammates and keep track of the changes.

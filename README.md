@@ -85,7 +85,7 @@ git clone https://github.com/faizyabShah/Search-Engine.git
 [//]: # "Source definitions"
 [geeks-for-geeks]: https://www.geeksforgeeks.org/difference-inverted-index-forward-index/ "Inverted vs Forwarded Indexing"
 [nltk]: https://www.analyticsvidhya.com/blog/2021/07/nltk-a-beginners-hands-on-guide-to-natural-language-processing/ "Intro to NLTK"
-[The Anatomy of a Large-Scale Hypertextual Web Search Engine]: http://infolab.stanford.edu/~backrub/google.html "The Anatomy of a Large-Scale Hypertextual Web Search Engine"
+[The Anatomy of a Large-Scale Hypertextual Web Search Engine]: https://research.google/pubs/pub334/ "The Anatomy of a Large-Scale Hypertextual Web Search Engine"
 [An introduction to the Flask Python web app framework]: https://opensource.com/article/18/4/flask "Flask Introduction"
 
 ## Conclusion

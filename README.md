@@ -11,9 +11,6 @@ A fun search engine made for our end semester project for Data Structures and AL
 
 *  **Dataset:**
 We will use a dataset from the provided NELA-GT-2021 collection. 
-* *Description:*
-NELA-GT-2021 contains nearly 1.8M news articles from 367 sources collected between January 1st, 2021, and December 31st, 2021. Just as with NELA-GT-2018, NELA-GT-2019 and NELA-GT-2021, these sources come from a wide range of mainstream and alternative news sources. Included in the dataset are source-level ground truth labels from Media Bias/Fact Check (MBFC) covering multiple dimensions of veracity.
-Article Size: A 100,000 articles will be selected for the purpose of the project.
 
 
 ## Structures and Frameworks

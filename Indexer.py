@@ -1,10 +1,8 @@
 import json
 import re
-import string
 from nltk import word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
-from multiprocessing import pool
 
 
 def indexarticle(article, docpos, ps, stop_words, self, frwdindx, points):
@@ -84,19 +82,20 @@ class lexicon:
             data = json.load(f)
 
         docpos = len(doc_ids.docIDs)
-        # for article in data:
-        #     doc_ids.updateDocIDs(docpos, article)
-        #     docpos+=1
 
         for article in data:
-
             doc_ids.updateDocIDs(docpos, article)
+            title = article["title"]
+            indexarticle(title, docpos, ps, stop_words, self, frwdindx, 6)
+            content = article["content"]
+            indexarticle(content, docpos, ps, stop_words,
+                         self, frwdindx, 1)
             docpos += 1
-            indexarticle(article, docpos, ps, stop_words, self, frwdindx)
 
         inv = invertedIndex()
         inv.updateInvertedIndex(frwdindx.forwardIndex)
         self.storeLex()
+
 
 
 class invertedIndex:
@@ -116,10 +115,7 @@ class invertedIndex:
         for docID in forwardIndex:
             for wordID in forwardIndex[docID]:
                 if (wordID in self.invertedIndex):
-                    # if docID not in self.invertedIndex[wordID]:
-                    # if docID in self.invertedIndex[wordID]:
                     self.invertedIndex[wordID][docID] = forwardIndex[docID][wordID]
-                    # self.invertedIndex[wordID].append(docID)
                 else:
                     self.invertedIndex[wordID] = {
                         docID: forwardIndex[docID][wordID]}

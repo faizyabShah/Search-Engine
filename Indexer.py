@@ -7,18 +7,19 @@ from nltk.corpus import stopwords
 from multiprocessing import pool
 
 
-def indexarticle(article, docpos, ps, stop_words, self, frwdindx):
-    temp = article["title"] + " " + article["content"]
-    temp = temp.translate(str.maketrans('', '', string.punctuation))
-    temp = word_tokenize(temp)
-    for i in range(len(temp)):
-        if temp[i] not in stop_words:
-            word = ps.stem(temp[i])
+def indexarticle(article, docpos, ps, stop_words, self, frwdindx, points):
+    article = re.sub(r'[^\w\s]', '', article)
+    article = word_tokenize(article)
+    for word_ in article:
+        if word_ not in stop_words:
+            word = ps.stem(word_)
             if (word not in self.lexicon):
-                self.lexicon[word] = str(
-                    len(self.lexicon))
+                self.lexicon[word] = [str(
+                    len(self.lexicon)), 1]
+            else:
+                self.lexicon[word][1] += 1
             frwdindx.updateForwardIndex(
-                docpos, self.lexicon[word], i)
+                docpos, self.lexicon[word][0], points)
 
 
 class docID:
@@ -49,14 +50,13 @@ class forwardIndex:
     def __init__(self):
         self.forwardIndex = {}
 
-    def updateForwardIndex(self, docID, wordID, pos):
-        if (docID in self.forwardIndex):
-            if (wordID in self.forwardIndex[docID]):
-                self.forwardIndex[docID][wordID].append(pos)
-            else:
-                self.forwardIndex[docID][wordID] = [pos]
+    def updateForwardIndex(self, docID, wordID, points):
+        if (docID not in self.forwardIndex):
+            self.forwardIndex[docID] = {wordID: points}
+        elif (wordID in self.forwardIndex[docID]):
+            self.forwardIndex[docID][wordID] += points
         else:
-            self.forwardIndex[docID] = {wordID: [pos]}
+            self.forwardIndex[docID][wordID] = points
 
 
 class lexicon:

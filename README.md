@@ -78,9 +78,9 @@ git clone https://github.com/faizyabShah/Search-Engine.git
 
 [nltk][nltk] - Used to read up and learn about nltk library
 
-[The Anatomy of a Large-Scale Hypertextual Web Search Engine][The-Anatomy-of-a-Large-Scale Hypertextual-Web-Search-Engine] - Why should you use markdown?
+[The Anatomy of a Large-Scale Hypertextual Web Search Engine][The Anatomy of a Large-Scale Hypertextual Web Search Engine] - For initial conceptual understamding of searching
 
-[Flask Introsuction][An introduction to the Flask Python web app framework] - To learn how to use flask for this project
+[Flask Introduction][An introduction to the Flask Python web app framework] - To learn how to use flask for this project
 
 [//]: # "Source definitions"
 [geeks-for-geeks]: https://www.geeksforgeeks.org/difference-inverted-index-forward-index/ "Inverted vs Forwarded Indexing"

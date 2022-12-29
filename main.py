@@ -1,25 +1,26 @@
-from Indexer import *
-from multiprocessing import Pool
-import time
+# from Indexer import *
+# from multiprocessing import Pool
+from queryParser import *
+# import time
+
+qp = queryParser()
+res = qp.search(["donald", "trump"])
+print(res)
+
+res2 = qp.search(["pakistan", "zindabad"])
+print(res2)
+# def poolhandler():
+#     p = Pool()
+#     p.map(createIndex, files)
 
 
-files = ["airwars.json"]
+# def createIndex(filename):
+#     lex = lexicon()
+#     lex.updateLex(filename)
 
 
-def poolhandler():
-    p = Pool()
-    p.map(createIndex, files)
+# if __name__ == '__main__':
 
-
-def createIndex(filename):
-    lex = lexicon()
-    lex.updateLex(filename)
-
-
-if __name__ == '__main__':
-
-    start = time.time()
-    # poolhandler()
-    for file in files:
-        createIndex(file)
-    print(time.time() - start)
+#     # poolhandler()
+#     for file in files:
+#         createIndex(file)

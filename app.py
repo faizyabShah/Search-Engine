@@ -26,8 +26,9 @@ def script():
 def search():
     params = request.args['q']
     params = params.split()
+    print(params)
     data = qp.search(params)
-    return data[:10]
+    return data[:20]
 
     # Do something with the data
 

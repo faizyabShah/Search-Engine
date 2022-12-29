@@ -63,6 +63,7 @@
     width: 600px;
     border-radius: 20px;
     margin: 20px auto;
+    cursor: pointer;
   }
   
   .card:hover {
@@ -77,4 +78,14 @@
     position: fixed;
     top: 0;
   }
+
+h3 {
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.comment {
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 15px;
+  text-align: center;
+}
   

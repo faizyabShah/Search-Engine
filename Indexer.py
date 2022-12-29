@@ -12,12 +12,10 @@ def indexarticle(article, docpos, ps, stop_words, self, frwdindx, points):
         if word_ not in stop_words:
             word = ps.stem(word_)
             if (word not in self.lexicon):
-                self.lexicon[word] = [str(
-                    len(self.lexicon)), 1]
-            else:
-                self.lexicon[word][1] += 1
+                self.lexicon[word] = str(
+                    len(self.lexicon))
             frwdindx.updateForwardIndex(
-                docpos, self.lexicon[word][0], points)
+                docpos, self.lexicon[word], points)
 
 
 class docID:
@@ -32,12 +30,13 @@ class docID:
         with open("docIDs.json", "w") as f:
             f.write(json.dumps(self.docIDs))
 
-    def updateDocIDs(self, pos, article):
+    def updateDocIDs(self, pos, article, totalwords):
 
         self.docIDs[str(pos)] = {
             "title": article["title"],
             "url": article["url"],
-            "content": article["content"][:150] + "..."
+            "content": article["content"][:150] + "...",
+            "length": totalwords
         }
 
     def __del__(self):
@@ -84,18 +83,19 @@ class lexicon:
         docpos = len(doc_ids.docIDs)
 
         for article in data:
-            doc_ids.updateDocIDs(docpos, article)
+
             title = article["title"]
             indexarticle(title, docpos, ps, stop_words, self, frwdindx, 6)
             content = article["content"]
             indexarticle(content, docpos, ps, stop_words,
                          self, frwdindx, 1)
+            totalwords = len(content)
+            doc_ids.updateDocIDs(docpos, article, totalwords)
             docpos += 1
 
         inv = invertedIndex()
         inv.updateInvertedIndex(frwdindx.forwardIndex)
         self.storeLex()
-
 
 
 class invertedIndex:

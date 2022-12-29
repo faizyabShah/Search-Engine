@@ -12,7 +12,24 @@ document.getElementById('submitbtn').addEventListener('click', e => {
     fetch('/search?q=' + document.getElementById('query').value)
       .then(response => response.json())
       .then(data => {
-
+        for (let i=0; i<12; i++) {
+          let adjust = document.createElement("div");
+        adjust.classList.add("card-container");
+        document.body.appendChild(adjust);
+        }    
+        
+        if (data.length >= 20) {
+          let comment = document.createElement("div");
+          comment.classList.add("comment");
+          comment.innerHTML = `<p>Here are 20 of the most relevant search results</p>`;
+          document.body.appendChild(comment);
+        } else if (data.length == 0) {
+          let comment = document.createElement("div");
+          comment.classList.add("comment");
+          comment.innerHTML = `<p>Oops, no results found.</p>`;
+          document.body.appendChild(comment);
+        }
+        
         for (let i = 0; i < data.length; i++) {
             console.log(data[i])
             let card = document.createElement("div");
@@ -21,7 +38,7 @@ document.getElementById('submitbtn').addEventListener('click', e => {
             let cardContainer = document.createElement("div");
             cardContainer.classList.add("card-container");
           
-            cardContainer.innerHTML = `<h3>${data[i].title}</h3><p>${data[i].url}<p>${data[i].content}</p>`;
+            cardContainer.innerHTML = `<h3>${data[i].title}</h3><a>${data[i].url}</a><p>${data[i].content}</p>`;
           
             card.appendChild(cardContainer);
           

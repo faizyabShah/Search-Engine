@@ -1,5 +1,6 @@
 from flask import Flask, send_from_directory, jsonify, request
 from queryParser import *
+import re
 
 app = Flask(__name__, static_folder="client")
 
@@ -25,6 +26,7 @@ def script():
 @app.route('/search', methods=['get'])
 def search():
     params = request.args['q']
+    params = re.sub(r'[^\w\s]', '', params)
     params = params.split()
     print(params)
     data = qp.search(params)
